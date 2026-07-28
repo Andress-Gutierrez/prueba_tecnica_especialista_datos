@@ -1,0 +1,6 @@
+# Dependencias del ETL / DW (Fase 4)
+# No incluir Apache Airflow aquí (se agregará en Fase 5).
+
+pandas>=2.2,<3
+psycopg[binary]>=3.1,<4
+pyxlsb>=1.0.10

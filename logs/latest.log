@@ -1,0 +1,55 @@
+2026-07-28 16:32:25 | INFO | etl.pipeline | Inicio del ETL | max_rows=None
+2026-07-28 16:32:25 | INFO | etl.pipeline | Inicio etapa Extract
+2026-07-28 16:38:18 | INFO | etl.pipeline | Fin etapa Extract | registros={'ventas': 243414, 'presupuesto': 731, 'registros': 459592}
+2026-07-28 16:38:18 | INFO | etl.pipeline | Inicio etapa Transform
+2026-07-28 16:38:32 | INFO | etl.pipeline | Fin etapa Transform | registros={'ventas': 243359, 'presupuesto': 731, 'registros': 459567}
+2026-07-28 16:38:32 | INFO | etl.pipeline | Inicio etapa Business Rules
+2026-07-28 16:38:35 | INFO | etl.pipeline | Fin etapa Business Rules | registros={'ventas': 243359, 'presupuesto': 731, 'registros': 459567}
+2026-07-28 16:38:35 | INFO | etl.pipeline | Inicio etapa Load
+2026-07-28 16:45:28 | INFO | etl.pipeline | Fin etapa Load | dims={'dim_region': 'inserted=0; updated=7; skipped_sk0=0', 'dim_canal': 'inserted=0; updated=9; skipped_sk0=0', 'dim_categoria': 'inserted=0; updated=6; skipped_sk0=0', 'dim_jerarquia_comercial': 'inserted=0; updated=54; skipped_sk0=0', 'dim_aliado': 'inserted=0; updated=56; skipped_sk0=0', 'dim_unidad_gestion': 'inserted=0; updated=5; skipped_sk0=0', 'dim_marca': 'inserted=0; updated=48; skipped_sk0=0', 'dim_vendedor': 'inserted=0; updated=1291; skipped_sk0=0', 'dim_validez_venta': 'inserted=0; updated=3; skipped_sk0=0', 'dim_campana': 'inserted=0; updated=94; skipped_sk0=0', 'dim_segmento': 'inserted=0; updated=9; skipped_sk0=0', 'dim_tipo_contacto': 'inserted=0; updated=13; skipped_sk0=0'} | facts={'fact_ventas': 'full_load_truncate_insert=243359', 'fact_presupuesto': 'full_load_truncate_insert=731', 'fact_gestion_tmk': 'full_load_truncate_insert=459567'}
+2026-07-28 16:45:28 | INFO | etl.pipeline | Inicio etapa Validation
+2026-07-28 16:45:30 | INFO | etl.pipeline | Fin etapa Validation | ok=True | chequeos=38 | fallidos=0
+2026-07-28 16:45:30 | INFO | etl.pipeline | Resumen final | === Resumen pipeline ETL (4.6) === | Extract: {'ventas': 243414, 'presupuesto': 731, 'registros': 459592} | Transform: {'ventas': 243359, 'presupuesto': 731, 'registros': 459567} | Business Rules: {'ventas': 243359, 'presupuesto': 731, 'registros': 459567} | Load dims: {'dim_region': 'inserted=0; updated=7; skipped_sk0=0', 'dim_canal': 'inserted=0; updated=9; skipped_sk0=0', 'dim_categoria': 'inserted=0; updated=6; skipped_sk0=0', 'dim_jerarquia_comercial': 'inserted=0; updated=54; skipped_sk0=0', 'dim_aliado': 'inserted=0; updated=56; skipped_sk0=0', 'dim_unidad_gestion': 'inserted=0; updated=5; skipped_sk0=0', 'dim_marca': 'inserted=0; updated=48; skipped_sk0=0', 'dim_vendedor': 'inserted=0; updated=1291; skipped_sk0=0', 'dim_validez_venta': 'inserted=0; updated=3; skipped_sk0=0', 'dim_campana': 'inserted=0; updated=94; skipped_sk0=0', 'dim_segmento': 'inserted=0; updated=9; skipped_sk0=0', 'dim_tipo_contacto': 'inserted=0; updated=13; skipped_sk0=0'} | Load facts: {'fact_ventas': 'full_load_truncate_insert=243359', 'fact_presupuesto': 'full_load_truncate_insert=731', 'fact_gestion_tmk': 'full_load_truncate_insert=459567'} |  | Validación DW: OK | Chequeos: 38 | Fallidos: 0 | Conteos: |   - dim_aliado: 57 |   - dim_campana: 95 |   - dim_canal: 10 |   - dim_categoria: 7 |   - dim_jerarquia_comercial: 55 |   - dim_marca: 49 |   - dim_region: 8 |   - dim_segmento: 10 |   - dim_tiempo: 1096 |   - dim_tipo_contacto: 14 |   - dim_unidad_gestion: 6 |   - dim_validez_venta: 4 |   - dim_vendedor: 1292 |   - fact_gestion_tmk: 459567 |   - fact_presupuesto: 731 |   - fact_ventas: 243359
+2026-07-28 16:45:30 | INFO | etl.pipeline | Duración total de la ejecución: 785.41 s
+2026-07-28 16:45:30 | INFO | etl.pipeline | Fin del ETL | ok=True
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Esquema dwh — presente=True
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe dimensión dim_tiempo
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe dimensión dim_region
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe dimensión dim_canal
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe dimensión dim_categoria
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe dimensión dim_jerarquia_comercial
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe dimensión dim_aliado
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe dimensión dim_unidad_gestion
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe dimensión dim_marca
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe dimensión dim_vendedor
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe dimensión dim_validez_venta
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe dimensión dim_campana
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe dimensión dim_segmento
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe dimensión dim_tipo_contacto
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe hecho fact_ventas
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Conteo fact_ventas — rows=243359
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe hecho fact_presupuesto
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Conteo fact_presupuesto — rows=731
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Existe hecho fact_gestion_tmk
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Conteo fact_gestion_tmk — rows=459567
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Miembro sk=0 en dim_tiempo — count=1
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Miembro sk=0 en dim_region — count=1
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Miembro sk=0 en dim_canal — count=1
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Miembro sk=0 en dim_categoria — count=1
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Miembro sk=0 en dim_jerarquia_comercial — count=1
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Miembro sk=0 en dim_aliado — count=1
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Miembro sk=0 en dim_unidad_gestion — count=1
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Miembro sk=0 en dim_marca — count=1
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Miembro sk=0 en dim_vendedor — count=1
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Miembro sk=0 en dim_campana — count=1
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Miembro sk=0 en dim_segmento — count=1
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Miembro sk=0 en dim_tipo_contacto — count=1
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Dominio dim_validez_venta — rows=4
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Integridad referencial fact_ventas — orphans=0
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Integridad referencial fact_presupuesto — orphans=0
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Integridad referencial fact_gestion_tmk — orphans=0
+2026-07-28 16:45:35 | INFO | etl.run | [OK] fact_gestion_tmk sin sk_canal — sk_canal_presente=False
+2026-07-28 16:45:35 | INFO | etl.run | [OK] Resumen final de ejecución — Validación DW: OK | Chequeos: 37 | Fallidos: 0 | Conteos: |   - dim_aliado: 57 |   - dim_campana: 95 |   - dim_canal: 10 |   - dim_categoria: 7 |   - dim_jerarquia_comercial: 55 |   - dim_marca: 49 |   - dim_region: 8 |   - dim_segmento: 10 |   - dim_tiempo: 1096 |   - dim_tipo_contacto: 14 |   - dim_unidad_gestion: 6 |   - dim_validez_venta: 4 |   - dim_vendedor: 1292 |   - fact_gestion_tmk: 459567 |   - fact_presupuesto: 731 |   - fact_ventas: 243359
+2026-07-28 16:45:35 | INFO | etl.run | Validación DW: OK | Chequeos: 38 | Fallidos: 0 | Conteos: |   - dim_aliado: 57 |   - dim_campana: 95 |   - dim_canal: 10 |   - dim_categoria: 7 |   - dim_jerarquia_comercial: 55 |   - dim_marca: 49 |   - dim_region: 8 |   - dim_segmento: 10 |   - dim_tiempo: 1096 |   - dim_tipo_contacto: 14 |   - dim_unidad_gestion: 6 |   - dim_validez_venta: 4 |   - dim_vendedor: 1292 |   - fact_gestion_tmk: 459567 |   - fact_presupuesto: 731 |   - fact_ventas: 243359
+
+: 243359

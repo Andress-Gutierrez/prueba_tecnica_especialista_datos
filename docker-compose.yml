@@ -1,0 +1,182 @@
+# Infraestructura PostgreSQL + Apache Airflow — Subfases 5.1 / 5.2
+# Executor: LocalExecutor (sin Redis / workers / Flower).
+# Imagen fija: apache/airflow:3.1.3
+# 5.2: montaje del proyecto para que PythonOperator importe etl.pipeline.run_pipeline.
+
+x-airflow-common: &airflow-common
+  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.1.3}
+  env_file:
+    - .env
+  environment: &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+    # URL completa en .env (codificar caracteres especiales del password, p. ej. ! -> %21)
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW__DATABASE__SQL_ALCHEMY_CONN}
+    AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
+    AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.session
+    AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW_JWT_SECRET}
+    AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
+    # Host del DW desde la red Docker (consola local sigue usando POSTGRES_HOST del .env en el host)
+    POSTGRES_HOST: postgres
+    PYTHONPATH: /opt/project
+    # Dependencias del ETL en la imagen Airflow (sin alterar requirements.txt del proyecto)
+    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-pandas pyxlsb psycopg[binary]}
+    _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
+    _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+  volumes:
+    - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/logs:/opt/airflow/logs
+    - ./airflow/plugins:/opt/airflow/plugins
+    - ./airflow/config:/opt/airflow/config
+    - ./:/opt/project
+  user: "${AIRFLOW_UID:-50000}:0"
+  networks:
+    - dwh_net
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ${POSTGRES_CONTAINER_NAME:-prueba_tecnica_postgres}
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - dwh_net
+
+  airflow-init:
+    <<: *airflow-common
+    container_name: prueba_tecnica_airflow_init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        set -euo pipefail
+        echo "[airflow-init] Esperando PostgreSQL..."
+        python - <<'PY'
+        import os, time
+        import psycopg2
+        from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+
+        host = "postgres"
+        user = os.environ["POSTGRES_USER"]
+        password = os.environ["POSTGRES_PASSWORD"]
+        airflow_db = os.environ.get("AIRFLOW_POSTGRES_DB", "airflow")
+
+        for attempt in range(60):
+            try:
+                conn = psycopg2.connect(
+                    host=host, user=user, password=password, dbname="postgres"
+                )
+                break
+            except Exception as exc:
+                print(f"[airflow-init] Postgres no listo ({attempt+1}/60): {exc}")
+                time.sleep(2)
+        else:
+            raise SystemExit("PostgreSQL no disponible para inicializar Airflow")
+
+        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cur = conn.cursor()
+        cur.execute("SELECT 1 FROM pg_database WHERE datname = %s", (airflow_db,))
+        if cur.fetchone() is None:
+            print(f"[airflow-init] Creando base de metadata '{airflow_db}'...")
+            cur.execute(f'CREATE DATABASE "{airflow_db}"')
+        else:
+            print(f"[airflow-init] Base de metadata '{airflow_db}' ya existe")
+        cur.close()
+        conn.close()
+        PY
+
+        echo "[airflow-init] Migrando metadata DB..."
+        airflow db migrate
+
+        echo "[airflow-init] Creando usuario administrador (idempotente)..."
+        airflow users create \
+          --username "${_AIRFLOW_WWW_USER_USERNAME}" \
+          --password "${_AIRFLOW_WWW_USER_PASSWORD}" \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@example.com \
+          || true
+
+        echo "[airflow-init] Inicialización completada"
+    restart: "no"
+
+  # En Airflow 3.1 la UI/API se inicia con "api-server".
+  # El servicio se nombra airflow-webserver según arquitectura del proyecto.
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: prueba_tecnica_airflow_webserver
+    command: api-server
+    ports:
+      - "${AIRFLOW_WEBSERVER_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: prueba_tecnica_airflow_scheduler
+    command: scheduler
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    environment:
+      <<: *airflow-common-env
+      AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+  # Requerido por Apache Airflow 3.1 para descubrir/parsear DAGs.
+  airflow-dag-processor:
+    <<: *airflow-common
+    container_name: prueba_tecnica_airflow_dag_processor
+    command: dag-processor
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+networks:
+  dwh_net:
+    name: prueba_tecnica_net
+
+volumes:
+  postgres_data:
+    name: prueba_tecnica_postgres_data

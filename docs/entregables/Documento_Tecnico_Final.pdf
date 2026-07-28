@@ -1,0 +1,993 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R] /Count 8 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 2431 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+12 TL
+() Tj
+T*
+(DOCUMENTO TECNICO FINAL) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Proyecto: Prueba Tecnica  Especialista de Datos \(Proceso ETL y Visualizacion\)) Tj
+T*
+(Ultima actualizacion: 2026-07-28) Tj
+T*
+(Estado: version final para entrega) Tj
+T*
+() Tj
+T*
+(---) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(1. INTRODUCCION) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Este documento describe la solucion implementada para la prueba tecnica de Especialista de) Tj
+T*
+(Datos. El alcance cubre la carga de archivos .xlsb, la transformacion y depuracion de datos, el) Tj
+T*
+(diseno de un Data Warehouse local en PostgreSQL, la orquestacion con Apache Airflow y la) Tj
+T*
+(construccion de un tablero ejecutivo en Power BI.) Tj
+T*
+() Tj
+T*
+(La solucion se diseno para responder dos retos de negocio:) Tj
+T*
+() Tj
+T*
+(- Seguimiento al desempeno comercial de ventas frente a presupuesto.) Tj
+T*
+(- Seguimiento a la gestion de registros TMK Outbound.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(2. OBJETIVOS DEL PROYECTO) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(El objetivo tecnico fue implementar una base de datos local que funcionara como fuente confiable) Tj
+T*
+(para Power BI, evitando analisis directos sobre archivos Excel y separando claramente las) Tj
+T*
+(responsabilidades entre extraccion, transformacion, persistencia y visualizacion.) Tj
+T*
+() Tj
+T*
+(El objetivo analitico fue permitir al Director Comercial monitorear:) Tj
+T*
+() Tj
+T*
+(- Ventas validas frente al presupuesto.) Tj
+T*
+(- Desempeno por region, aliado, gerente, jefe y especialista.) Tj
+T*
+(- Gestion TMK por aliado, campana y segmento.) Tj
+T*
+(- Contactabilidad, contactos efectivos y contactos no efectivos.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(3. ARQUITECTURA DE LA SOLUCION) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(La arquitectura implementada sigue este flujo:) Tj
+T*
+() Tj
+T*
+(    Archivos .xlsb) Tj
+T*
+(        -> Python ETL) Tj
+T*
+(        -> PostgreSQL local en Docker) Tj
+T*
+(        -> Apache Airflow para orquestacion) Tj
+T*
+(        -> Power BI Desktop) Tj
+T*
+() Tj
+T*
+(Componentes principales:) Tj
+T*
+() Tj
+T*
+(- data/raw/: fuentes originales Ventas.xlsb, Presupuesto.xlsb y Registros.xlsb.) Tj
+T*
+(- etl/: extraccion, transformacion, reglas de negocio, carga y validacion.) Tj
+T*
+(- sql/ddl/ y sql/dml/: creacion del esquema fisico y seeds.) Tj
+T*
+(- repository/: persistencia desacoplada hacia PostgreSQL.) Tj
+T*
+(- airflow/dags/: DAGs de ejecucion.) Tj
+T*
+(- powerbi/PowerBI_ETL_Comercial.pbix: tablero ejecutivo.) Tj
+T*
+() Tj
+T*
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 2519 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+12 TL
+(Airflow solo orquesta. La logica de negocio reside en Python y el consumo analitico se realiza) Tj
+T*
+(desde Power BI contra PostgreSQL.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(4. DISENO DEL MODELO DE DATOS) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Se implemento un modelo dimensional orientado a analisis, con tres procesos de negocio:) Tj
+T*
+() Tj
+T*
+(- Ventas comerciales.) Tj
+T*
+(- Presupuesto / metas comerciales.) Tj
+T*
+(- Gestion TMK Outbound.) Tj
+T*
+() Tj
+T*
+(Hechos:) Tj
+T*
+() Tj
+T*
+(- dwh.fact_ventas) Tj
+T*
+(- dwh.fact_presupuesto) Tj
+T*
+(- dwh.fact_gestion_tmk) Tj
+T*
+() Tj
+T*
+(Dimensiones:) Tj
+T*
+() Tj
+T*
+(- dwh.dim_tiempo) Tj
+T*
+(- dwh.dim_region) Tj
+T*
+(- dwh.dim_canal) Tj
+T*
+(- dwh.dim_categoria) Tj
+T*
+(- dwh.dim_jerarquia_comercial) Tj
+T*
+(- dwh.dim_aliado) Tj
+T*
+(- dwh.dim_unidad_gestion) Tj
+T*
+(- dwh.dim_marca) Tj
+T*
+(- dwh.dim_vendedor) Tj
+T*
+(- dwh.dim_validez_venta) Tj
+T*
+(- dwh.dim_campana) Tj
+T*
+(- dwh.dim_segmento) Tj
+T*
+(- dwh.dim_tipo_contacto) Tj
+T*
+() Tj
+T*
+(Granos principales:) Tj
+T*
+() Tj
+T*
+(- Ventas: una fila representa un evento transaccional de venta.) Tj
+T*
+(- Presupuesto: una fila representa una meta mensual en un cruce comercial.) Tj
+T*
+(- Gestion TMK: una fila representa un agregado de gestion por tipificacion.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(5. JUSTIFICACION DEL MODELO IMPLEMENTADO) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(El enunciado solicita evaluar si para este escenario resulta mas adecuada una arquitectura tipo) Tj
+T*
+(estrella \(Star Schema\) o copo de nieve \(Snowflake Schema\). Para la solucion implementada se) Tj
+T*
+(eligio Star Schema como arquitectura principal.) Tj
+T*
+() Tj
+T*
+(La razon principal es que el objetivo del proyecto es analitico y ejecutivo: Power BI debe) Tj
+T*
+(responder rapidamente preguntas de negocio sobre ventas, presupuesto y gestion TMK. El modelo) Tj
+T*
+(estrella reduce la cantidad de saltos entre tablas, simplifica las relaciones y facilita que los) Tj
+T*
+(usuarios consuman dimensiones de negocio directamente desde el panel de campos.) Tj
+T*
+() Tj
+T*
+(En este caso existen tres hechos \(fact_ventas, fact_presupuesto, fact_gestion_tmk\) que comparten) Tj
+T*
+(dimensiones conformadas como tiempo, region, aliado y jerarquia comercial. Esta estructura) Tj
+T*
+(encaja naturalmente con un Star Schema porque cada hecho se conecta de forma directa con sus) Tj
+T*
+(dimensiones, sin depender de cadenas largas de relaciones.) Tj
+T*
+() Tj
+T*
+(Se evaluo Snowflake Schema como alternativa, especialmente para jerarquias como canal, region o) Tj
+T*
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 3168 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+12 TL
+(jerarquia comercial. Sin embargo, se descarto porque normalizar esas dimensiones en) Tj
+T*
+(subdimensiones aumentaria la complejidad del modelo semantico, haria mas dificil la navegacion) Tj
+T*
+(en Power BI y agregaria relaciones adicionales sin un beneficio proporcional para el volumen y) Tj
+T*
+(el tipo de analisis requerido.) Tj
+T*
+() Tj
+T*
+(Desde buenas practicas de rendimiento en Power BI, el Star Schema ofrece ventajas claras:) Tj
+T*
+() Tj
+T*
+(- Menos relaciones activas que evaluar durante los filtros.) Tj
+T*
+(- Relaciones 1:N directas desde dimensiones hacia hechos.) Tj
+T*
+(- Tablas de hechos enfocadas en medidas y llaves surrogate.) Tj
+T*
+(- Dimensiones con atributos descriptivos listos para filtros, segmentadores y jerarquias.) Tj
+T*
+(- Modelo semantico mas simple para el usuario final.) Tj
+T*
+() Tj
+T*
+(El modelo implementado en Power BI refleja la estructura dimensional creada en PostgreSQL. Las) Tj
+T*
+(tablas dwh.fact_* se mantienen como hechos y las tablas dwh.dim_* como dimensiones. Las) Tj
+T*
+(relaciones se configuraron desde dimensiones hacia hechos usando las claves sk_*, conservando la) Tj
+T*
+(integridad del Data Warehouse.) Tj
+T*
+() Tj
+T*
+(Para mejorar la experiencia de usuario, las claves tecnicas sk_* y columnas de auditoria como) Tj
+T*
+(fecha_carga_dw se ocultaron en la vista de informe. De esta forma, el usuario de negocio ve) Tj
+T*
+(atributos analiticos como region, aliado, gerente, jefe, especialista, campana, segmento y) Tj
+T*
+(medidas DAX, sin exponerse a llaves tecnicas del modelo.) Tj
+T*
+() Tj
+T*
+(En conclusion, Star Schema es la opcion mas adecuada para este escenario porque equilibra) Tj
+T*
+(rendimiento, claridad, trazabilidad con la base de datos y facilidad de uso en Power BI.) Tj
+T*
+(Snowflake Schema se considero, pero se descarto para evitar complejidad innecesaria en un) Tj
+T*
+(tablero ejecutivo orientado a analisis comercial.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(6. MODELO FISICO) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(El modelo fisico se implemento en PostgreSQL bajo el esquema dwh.) Tj
+T*
+() Tj
+T*
+(Caracteristicas:) Tj
+T*
+() Tj
+T*
+(- Surrogate keys sk_* en dimensiones y hechos.) Tj
+T*
+(- Relaciones 1:N desde dimensiones hacia hechos.) Tj
+T*
+(- Indices analiticos sobre claves de hechos.) Tj
+T*
+(- Miembro sk=0 para valores no informados.) Tj
+T*
+(- Tabla dim_validez_venta para materializar la regla de ventas validas.) Tj
+T*
+(- dim_tiempo como calendario corporativo con festivos Colombia y bandera es_habil.) Tj
+T*
+() Tj
+T*
+(La carga de hechos usa estrategia Full Load: TRUNCATE + carga completa. Para soportar el volumen) Tj
+T*
+(real, la carga de hechos se optimizo con PostgreSQL COPY FROM STDIN.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(7. DEPURACIONES Y TRANSFORMACIONES) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Transformaciones aplicadas:) Tj
+T*
+() Tj
+T*
+(- Normalizacion de nombres de columnas.) Tj
+T*
+(- Limpieza de textos y espacios.) Tj
+T*
+(- Conversion de fechas y periodos.) Tj
+T*
+(- Conversion de medidas numericas.) Tj
+T*
+(- Deduplicacion tecnica.) Tj
+T*
+(- Homologacion de catalogos dimensionales.) Tj
+T*
+(- Asignacion de miembros No informado.) Tj
+T*
+(- Construccion de dimensiones conformadas.) Tj
+T*
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 2129 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+12 TL
+(- Resolucion de surrogate keys para hechos.) Tj
+T*
+() Tj
+T*
+(Reglas de negocio destacadas:) Tj
+T*
+() Tj
+T*
+(- Venta valida: tiene codigo de factura y no presenta nota credito.) Tj
+T*
+(- TMK Outbound: se conserva como universo de analisis de Registros.xlsb.) Tj
+T*
+(- Tipificacion TMK: contactos efectivos, contactos no efectivos y no contactos.) Tj
+T*
+(- Presupuesto: se conserva el total T&T como medida monetaria de presupuesto.) Tj
+T*
+(- Calendario: dias habiles lunes a sabado, excluyendo festivos nacionales de Colombia segun) Tj
+T*
+(dim_tiempo.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(8. IMPLEMENTACION DEL ETL) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(El ETL esta organizado por capas:) Tj
+T*
+() Tj
+T*
+(- etl/extract/: lectura de archivos .xlsb.) Tj
+T*
+(- etl/transform/: limpieza tecnica por dataset.) Tj
+T*
+(- etl/business_rules/: reglas de negocio.) Tj
+T*
+(- etl/load/: orquestacion de carga de dimensiones y hechos.) Tj
+T*
+(- repository/: acceso a PostgreSQL.) Tj
+T*
+(- etl/validation.py: validacion del Data Warehouse.) Tj
+T*
+() Tj
+T*
+(La ejecucion final se realizo sin limite de muestra \(max_rows=None\) y cargo:) Tj
+T*
+() Tj
+T*
+(- fact_ventas: 243359 filas.) Tj
+T*
+(- fact_presupuesto: 731 filas.) Tj
+T*
+(- fact_gestion_tmk: 459567 filas.) Tj
+T*
+() Tj
+T*
+(Resultado de validacion:) Tj
+T*
+() Tj
+T*
+(- Validacion DW: OK.) Tj
+T*
+(- Chequeos: 38.) Tj
+T*
+(- Fallidos: 0.) Tj
+T*
+(- Orphans: 0.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(9. ORQUESTACION CON APACHE AIRFLOW) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Se implemento un DAG principal para ejecutar el pipeline comercial:) Tj
+T*
+() Tj
+T*
+(- airflow/dags/etl_comercial_pipeline.py) Tj
+T*
+() Tj
+T*
+(Caracteristicas:) Tj
+T*
+() Tj
+T*
+(- DAG manual \(schedule=None\).) Tj
+T*
+(- Una tarea principal run_etl_pipeline.) Tj
+T*
+(- PythonOperator.) Tj
+T*
+(- Reintentos configurados.) Tj
+T*
+(- Timeout operativo.) Tj
+T*
+(- Logging en consola y archivo.) Tj
+T*
+() Tj
+T*
+(Tambien se implemento infraestructura para calendario corporativo mediante calendar_seed_dag,) Tj
+T*
+(que alimenta dim_tiempo con fechas, festivos y dias habiles.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(10. BASE DE DATOS POSTGRESQL) Tj
+T*
+() Tj
+T*
+ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 1602 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+12 TL
+() Tj
+T*
+(La base local se ejecuta con Docker Compose y PostgreSQL 16. La configuracion se maneja por) Tj
+T*
+(variables de entorno a partir de replace.env y .env.) Tj
+T*
+() Tj
+T*
+(Validaciones implementadas:) Tj
+T*
+() Tj
+T*
+(- Existencia del esquema dwh.) Tj
+T*
+(- Existencia de 13 dimensiones.) Tj
+T*
+(- Existencia de 3 hechos.) Tj
+T*
+(- Conteos por tabla.) Tj
+T*
+(- Integridad referencial.) Tj
+T*
+(- Miembros sk=0.) Tj
+T*
+(- Dominio de dim_validez_venta.) Tj
+T*
+(- Confirmacion de que fact_gestion_tmk no contiene sk_canal.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(11. DASHBOARD POWER BI) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(El archivo powerbi/PowerBI_ETL_Comercial.pbix contiene tres paginas:) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Resumen_Ejecutivo) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Incluye KPIs principales:) Tj
+T*
+() Tj
+T*
+(- Ventas validas.) Tj
+T*
+(- Presupuesto T&T.) Tj
+T*
+(- Cumplimiento.) Tj
+T*
+(- Faltante.) Tj
+T*
+(- Ventas vs presupuesto por region.) Tj
+T*
+() Tj
+T*
+(Tras refrescar con datos completos:) Tj
+T*
+() Tj
+T*
+(- Ventas validas aproximadas: $ 327 mil M.) Tj
+T*
+(- Presupuesto T&T aproximado: $ 364 mil M.) Tj
+T*
+(- Cumplimiento aproximado: 90,06 %.) Tj
+T*
+(- Faltante aproximado: $ 36 mil M.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Detalle_Comercial) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Incluye matrices por:) Tj
+T*
+() Tj
+T*
+(- Aliado.) Tj
+T*
+(- Gerente.) Tj
+T*
+(- Jefe.) Tj
+T*
+(- Especialista.) Tj
+T*
+() Tj
+T*
+(Permite identificar sobrecumplimientos e incumplimientos mediante ventas, presupuesto,) Tj
+T*
+(cumplimiento y faltante.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(TMK_Outbound) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Incluye:) Tj
+T*
+() Tj
+T*
+ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 1900 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+12 TL
+(- Registros entregados.) Tj
+T*
+(- % Gestion.) Tj
+T*
+(- % Contactabilidad.) Tj
+T*
+(- % Contactos efectivos.) Tj
+T*
+(- % Contactos no efectivos.) Tj
+T*
+(- Top 5 aliados por contactabilidad.) Tj
+T*
+(- Campanas con mejor contactabilidad.) Tj
+T*
+(- Campanas con mayor y menor cantidad de registros.) Tj
+T*
+(- Contactabilidad por segmento.) Tj
+T*
+() Tj
+T*
+(Tras refrescar con datos completos:) Tj
+T*
+() Tj
+T*
+(- Registros entregados aproximados: 55 mil.) Tj
+T*
+(- Gestion: 32,34 %.) Tj
+T*
+(- Contactabilidad: 18,03 %.) Tj
+T*
+(- Contactos efectivos: 14,16 %.) Tj
+T*
+(- Contactos no efectivos: 3,87 %.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(12. PRINCIPALES MEDIDAS DAX) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Medidas de ventas y presupuesto:) Tj
+T*
+() Tj
+T*
+(    Ventas_$ = SUM\('dwh fact_ventas'[valor_antes_iva]\)) Tj
+T*
+() Tj
+T*
+(    Ventas_Validas_$ =) Tj
+T*
+(    CALCULATE\() Tj
+T*
+(        [Ventas_$],) Tj
+T*
+(        'dwh dim_validez_venta'[es_venta_valida] = TRUE\(\)) Tj
+T*
+(    \)) Tj
+T*
+() Tj
+T*
+(    Presupuesto_TYT = SUM\('dwh fact_presupuesto'[tyt]\)) Tj
+T*
+() Tj
+T*
+(    Cumplimiento_TYT_Valido_% =) Tj
+T*
+(    DIVIDE\([Ventas_Validas_$], [Presupuesto_TYT]\)) Tj
+T*
+() Tj
+T*
+(    Faltante_TYT_Valido_$ =) Tj
+T*
+(    [Presupuesto_TYT] - [Ventas_Validas_$]) Tj
+T*
+() Tj
+T*
+(Medidas TMK:) Tj
+T*
+() Tj
+T*
+(    Registros_Entregados = [Gestiones_TMK]) Tj
+T*
+() Tj
+T*
+(    Contactos_Efectivos =) Tj
+T*
+(    CALCULATE\() Tj
+T*
+(        [Gestiones_TMK],) Tj
+T*
+(        'dwh dim_tipo_contacto'[tipo_contacto] = "CONTACTOS EFECTIVOS") Tj
+T*
+(    \)) Tj
+T*
+() Tj
+T*
+(    Contactos_No_Efectivos =) Tj
+T*
+(    CALCULATE\() Tj
+T*
+(        [Gestiones_TMK],) Tj
+T*
+(        'dwh dim_tipo_contacto'[tipo_contacto] = "CONTACTOS NO EFECTIVOS") Tj
+T*
+(    \)) Tj
+T*
+() Tj
+T*
+(    Contactos_TMK =) Tj
+T*
+(    [Contactos_Efectivos] + [Contactos_No_Efectivos]) Tj
+T*
+() Tj
+T*
+(    Contactabilidad_TMK_% =) Tj
+T*
+ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 17 0 R >>
+endobj
+17 0 obj
+<< /Length 2990 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+12 TL
+(    DIVIDE\([Contactos_TMK], [Registros_Entregados]\)) Tj
+T*
+() Tj
+T*
+(    Contactos_Efectivos_% =) Tj
+T*
+(    DIVIDE\([Contactos_Efectivos], [Registros_Entregados]\)) Tj
+T*
+() Tj
+T*
+(    Contactos_No_Efectivos_% =) Tj
+T*
+(    DIVIDE\([Contactos_No_Efectivos], [Registros_Entregados]\)) Tj
+T*
+() Tj
+T*
+(Las formulas exactas de % Gestion, % Contactabilidad, % Contactos efectivos y % Contactos no) Tj
+T*
+(efectivos no estaban especificadas en el PDF; se adopto una definicion consistente con la) Tj
+T*
+(tipificacion observada en la fuente de registros.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(13. NOVEDADES IDENTIFICADAS DURANTE EL ANALISIS) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Hallazgos relevantes:) Tj
+T*
+() Tj
+T*
+(- Codigo Factura no es clave natural unica de ventas.) Tj
+T*
+(- Ventas contiene registros sin factura y con nota credito; por eso se creo dim_validez_venta.) Tj
+T*
+(- Presupuesto contiene medidas monetarias terminales, tecnologia y tyt.) Tj
+T*
+(- Registros TMK llega en grano agregado, no como contacto unitario.) Tj
+T*
+(- La jerarquia comercial no tiene cobertura completa en todos los registros.) Tj
+T*
+(- Existen valores sin region o sin informacion asignada.) Tj
+T*
+(- Algunas formulas de TMK no estaban cerradas explicitamente en el enunciado.) Tj
+T*
+(- Se identifico PII potencial en identificaciones de vendedores, por lo que se ocultaron campos) Tj
+T*
+(tecnicos/no necesarios en Power BI.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(14. USO DE HERRAMIENTAS DE IA) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(Se utilizaron herramientas de IA como apoyo metodologico y de productividad:) Tj
+T*
+() Tj
+T*
+(- ChatGPT: rol de Tech Lead para planificacion, revision de decisiones, validacion funcional y) Tj
+T*
+(guia de construccion del tablero.) Tj
+T*
+(- Cursor: apoyo en implementacion, revision de codigo, documentacion y actualizacion de) Tj
+T*
+(bitacora.) Tj
+T*
+() Tj
+T*
+(Ejemplos de prompts utilizados:) Tj
+T*
+() Tj
+T*
+(- "Actua como inspector visual de Power BI y describe unicamente lo que ves".) Tj
+T*
+(- "Guiame como Tech Lead para finalizar el proyecto y cumplir el PDF".) Tj
+T*
+(- "Revisa que falta contra los requisitos de la prueba tecnica".) Tj
+T*
+(- "Completa el documento tecnico final con modelo, ETL, Power BI, DAX y uso de IA".) Tj
+T*
+() Tj
+T*
+(La IA no sustituyo las fuentes oficiales del proyecto. Las decisiones se contrastaron con el) Tj
+T*
+(PDF, el perfilado de datos, los logs del ETL y el modelo implementado.) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(15. CONCLUSIONES) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(La solucion implementa un flujo completo desde fuentes .xlsb hasta un tablero ejecutivo en Power) Tj
+T*
+(BI sobre PostgreSQL. El modelo dimensional permite analizar ventas, presupuesto y gestion TMK) Tj
+T*
+(con dimensiones de negocio reutilizables.) Tj
+T*
+() Tj
+T*
+(El ETL final fue ejecutado con datos completos y validacion satisfactoria del Data Warehouse.) Tj
+T*
+(Power BI fue refrescado contra la carga completa y presenta indicadores coherentes para los dos) Tj
+T*
+(retos solicitados.) Tj
+T*
+ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 19 0 R >>
+endobj
+19 0 obj
+<< /Length 351 >>
+stream
+BT
+/F1 9 Tf
+50 800 Td
+12 TL
+() Tj
+T*
+(Quedan como mejoras futuras:) Tj
+T*
+() Tj
+T*
+(- Formalizar con negocio las formulas exactas de TMK no especificadas en el PDF.) Tj
+T*
+(- Profundizar en meta diaria dinamica y acumulacion de deficit con mas visuales especificos.) Tj
+T*
+(- Publicar el tablero en Power BI Service si el entorno lo permite.) Tj
+T*
+ET
+endstream
+endobj
+xref
+0 20
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000162 00000 n 
+0000000232 00000 n 
+0000000358 00000 n 
+0000002841 00000 n 
+0000002967 00000 n 
+0000005538 00000 n 
+0000005664 00000 n 
+0000008884 00000 n 
+0000009012 00000 n 
+0000011194 00000 n 
+0000011322 00000 n 
+0000012977 00000 n 
+0000013105 00000 n 
+0000015058 00000 n 
+0000015186 00000 n 
+0000018229 00000 n 
+0000018357 00000 n 
+trailer
+<< /Size 20 /Root 1 0 R >>
+startxref
+18760
+%%EOF
