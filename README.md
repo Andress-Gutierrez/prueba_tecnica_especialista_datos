@@ -75,6 +75,7 @@ prueba_tecnica_especialista_datos/
 - Docker Desktop (o Docker Engine + Compose v2)
 - PowerShell (Windows)
 - Archivo `.env` (copiar desde `replace.env`)
+- Python **3.10+** (recomendado **3.12**) — solo si se ejecuta el ETL por consola (ver sección siguiente)
 
 Flujo de configuración:
 
@@ -86,15 +87,47 @@ replace.env
 
 ---
 
+## Entorno Python local (solo para ejecución por consola)
+
+Existen **dos contextos de ejecución** y solo uno requiere instalar dependencias manualmente:
+
+| Contexto | ¿Requiere venv / pip install? |
+|----------|-------------------------------|
+| DAGs vía Airflow (Docker) | **No.** La imagen `apache/airflow:3.1.3` trae Python 3.12 y las dependencias del ETL se instalan automáticamente al arrancar los contenedores (`_PIP_ADDITIONAL_REQUIREMENTS` en `docker-compose.yml`) |
+| ETL / seeder por consola (`python -m scripts...`) | **Sí.** Crear venv e instalar `requirements.txt` |
+
+Para la ejecución por consola, después de clonar el repositorio y antes de ejecutar cualquier script:
+
+```powershell
+# Verificar versión (requiere 3.10+, recomendado 3.12)
+python --version
+
+# Crear y activar entorno virtual
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+# Instalar dependencias del ETL
+pip install -r requirements.txt
+```
+
+Notas:
+
+- El proyecto usa sintaxis moderna de tipos (`int | None`), por lo que **Python 3.10 es el mínimo**. Se recomienda 3.12 para alinear el host con la imagen de Airflow.
+- `requirements.txt` **no incluye Apache Airflow**: Airflow solo corre dentro de Docker.
+- `_PIP_ADDITIONAL_REQUIREMENTS` es una práctica de desarrollo local; en producción se construiría una imagen propia con `pip install -r requirements.txt` en build.
+
+---
+
 ## Orden de ejecución operativo
 
 ```text
 1. Copiar replace.env → .env y completar secretos (incl. FESTIVOS_API_KEY)
-2. docker compose up airflow-init && docker compose up -d
-3. Aplicar DDL/DML si aplica (scripts/run_ddl.ps1, run_dml.ps1)
-4. Ejecutar calendar_seed_dag (o: python -m scripts.run_calendar_seed)
-5. Ejecutar etl_comercial_pipeline (o: python -m scripts.run_etl_pipeline)
-6. Revisar validación DW / logs/
+2. (Solo ejecución por consola) Crear venv Python 3.10+ e instalar requirements.txt
+3. docker compose up airflow-init && docker compose up -d
+4. Aplicar DDL/DML si aplica (scripts/run_ddl.ps1, run_dml.ps1)
+5. Ejecutar calendar_seed_dag (o: python -m scripts.run_calendar_seed)
+6. Ejecutar etl_comercial_pipeline (o: python -m scripts.run_etl_pipeline)
+7. Revisar validación DW / logs/
 ```
 
 ---
