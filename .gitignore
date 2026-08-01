@@ -33,3 +33,6 @@ Thumbs.db
 # Power BI temporales
 *.tmp
 ~$*
+
+# Preparación personal de entrevista (no es entregable)
+Entrenamiento_Entrevista.md

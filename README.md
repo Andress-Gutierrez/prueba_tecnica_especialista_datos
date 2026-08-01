@@ -8,8 +8,9 @@ Pipeline objetivo:
 Excel (.xlsb) → Python ETL → Apache Airflow → PostgreSQL → Power BI
 ```
 
-**Estado actual:** Fase 5 **cerrada** (Subfase **5.5.3** consolidación calendario corporativo).  
-Siguiente fase autorizada: **Fase 6 — Power BI**.
+**Estado actual:** solución **completa de extremo a extremo** (Fases 0–7).  
+ETL Full Load validado (`fact_ventas=243359`, `fact_presupuesto=731`, `fact_gestion_tmk=459567`; DW 38/38).  
+Entregables: Power BI + documentación técnica final.
 
 ---
 
@@ -25,7 +26,8 @@ Siguiente fase autorizada: **Fase 6 — Power BI**.
 | DAG `etl_comercial_pipeline` (PythonOperator + políticas 5.3) | ✅ Validado (5.4 Success) |
 | DAG `calendar_seed_dag` (Master Data calendario) | ✅ Oficial (`dim_tiempo`) |
 | Validación operacional integral | ✅ `docs/entregables/Validacion_Operacional.md` |
-| Power BI | ⏳ Fase 6 |
+| Power BI (`powerbi/PowerBI_ETL_Comercial.pbix`) | ✅ Completado |
+| Documentación final / entregables | ✅ Completado |
 
 ---
 
@@ -64,7 +66,7 @@ prueba_tecnica_especialista_datos/
 │   └── config/
 ├── logs/                     # Logs operativos del ETL
 ├── notebooks/
-├── powerbi/                  # Fase 6
+├── powerbi/                  # PowerBI_ETL_Comercial.pbix
 └── tests/
 ```
 
@@ -334,8 +336,8 @@ python -m scripts.run_etl_pipeline
 | **5.5.2** | **Idempotencia de hechos (TRUNCATE + INSERT)** | **✅ Completada** |
 | **5.5.3** | **Consolidación calendario corporativo** | **✅ Completada** |
 | **5.6** | **Infraestructura calendario corporativo** | **✅ Implementada** |
-| 6 | Power BI | Siguiente |
-| 7 | Documentación final | Pendiente |
+| 6 | Power BI | ✅ Completada |
+| 7 | Documentación final | ✅ Completada |
 
 ---
 
